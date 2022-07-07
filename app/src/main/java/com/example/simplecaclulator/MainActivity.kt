@@ -11,6 +11,7 @@ import com.example.simplecaclulator.databinding.ActivityMainBinding
 
 const val TAG = "MyApp"
 
+
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
@@ -19,8 +20,6 @@ class MainActivity : AppCompatActivity() {
     private val resultsTV: TextView
         get() = findViewById(R.id.resultsTV)
 
-    private var operationApplicable = false
-    private var canAddDecimal = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +29,7 @@ class MainActivity : AppCompatActivity() {
             clearButton.setOnClickListener { clearAction() }
             backspaceButton.setOnClickListener { backspaceAction() }
             addDecimalButton.setOnClickListener { addDecimal(it) }
+            equalsButton.setOnClickListener { equalsAction() }
 
             //number buttons
             Button1.setOnClickListener { numberAction(it) }
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             multiplyButton.setOnClickListener { operationAction(it) }
             minusButton.setOnClickListener { operationAction(it) }
             plusButton.setOnClickListener { operationAction(it) }
-            percentButton.setOnClickListener {percentAction(it) }
+            percentButton.setOnClickListener { percentAction(it) }
         }
 
     }
@@ -84,14 +84,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun lastCharIsPercent() = lastChar() == getString(R.string.percent)[0]
-
     private fun clearAction() {
         workingsTV.text = ""
         resultsTV.text = ""
     }
 
-    fun percentAction(view: View) {
+    private fun percentAction(view: View) {
         if (view is Button) {
             if (workingsTV.length() > 0 && (lastCharIsNumber() || lastCharIsPercent()))
                 workingsTV.append(view.text)
@@ -104,19 +102,31 @@ class MainActivity : AppCompatActivity() {
             workingsTV.text = workingsTV.text.subSequence(0, length - 1)
     }
 
-    fun equalsAction(view: View) {}
+    private fun equalsAction() {
+        parseCalculatorString(workingsTV.text.toString())
+    }
 
     private fun addDecimal(view: View) {
         if (view is Button) {
-            if (workingsTV.length() > 0 && lastCharIsNumber()) {
+            if (lastCharIsNumber()) {
                 workingsTV.append(view.text)
             } else if (!lastCharIsPercent()) {
-                workingsTV.text = "0,"
+                if (lastChar() == getString(R.string.minus)[0] || lastChar() == null) {
+                    workingsTV.append("0,")
+                }
             }
         }
     }
 
-    private fun lastCharIsNumber() = workingsTV.text[workingsTV.length() - 1] in '0'..'9'
+    private fun lastCharIsNumber() = lastChar() in '0'..'9'
 
-    private fun lastChar() = workingsTV.text[workingsTV.length() - 1]
+    private fun lastCharIsPercent() = lastChar() == getString(R.string.percent)[0]
+
+    private fun lastChar(): Char? {
+        return if (workingsTV.length() == 0) {
+            null
+        } else
+            workingsTV.text[workingsTV.length() - 1]
+    }
+
 }
