@@ -1,9 +1,10 @@
 package com.example.simplecaclulator
 
 import android.util.Log
+import java.lang.IllegalArgumentException
 import kotlin.math.pow
 
-fun parseCalculatorString(input: String) {
+fun parseCalculatorString(input: String): Double {
     var workingString = ""
     //Add multiply signs after percent signs if needed
     for (id in input.indices) {
@@ -24,6 +25,7 @@ fun parseCalculatorString(input: String) {
 
     val result = evaluate(splitString)
     Log.d(TAG, "result: $result")
+    return result
 }
 
 fun evaluate(operandsAndOperators: MutableList<String>): Double {
@@ -109,8 +111,7 @@ fun evaluate(operandsAndOperators: MutableList<String>): Double {
         return operandsAndOperators[0].toDouble()
     }
 
-    Log.d(TAG, "evaluate: ERROR")
-    return 0.0
+    throw IllegalArgumentException()
 }
 
 private fun checkNext(input: String, id: Int): Boolean {
@@ -166,12 +167,14 @@ private fun String.splitByOperators(): MutableList<String> {
         operand = false
     }
 
-    if (!buffer.isNullOrEmpty()) {
-        splitString.add(buffer)
-    }else{
-        when(splitString[splitString.lastIndex][0]){
-            Operands.PlUS.sign,Operands.MINUS.sign -> splitString.add("0")
-            Operands.MULTIPLY.sign,Operands.DIVISION.sign -> splitString.add("1")
+    if (buffer != null) {
+        if (buffer.isNotEmpty()) {
+            splitString.add(buffer)
+        }else{
+            when(splitString[splitString.lastIndex].getOrNull(0)){
+                Operands.PlUS.sign,Operands.MINUS.sign -> splitString.add("0")
+                Operands.MULTIPLY.sign,Operands.DIVISION.sign -> splitString.add("1")
+            }
         }
     }
 

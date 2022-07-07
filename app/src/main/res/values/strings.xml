@@ -20,4 +20,5 @@
     <string name="_0">0</string>
     <string name="dot">,</string>
     <string name="equals">=</string>
+    <string name="errorCalculatorMessage">ERROR</string>
 </resources>

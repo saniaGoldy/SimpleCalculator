@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         if (view is Button) {
             workingsTV.append(view.text)
             Log.d(TAG, "numberAction: ${workingsTV.text}")
+            updateResultsTV()
         }
     }
 
@@ -81,6 +82,7 @@ class MainActivity : AppCompatActivity() {
             } else if (operation == getString(R.string.minus)) {
                 workingsTV.append(operation)
             }
+            updateResultsTV()
         }
     }
 
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         if (view is Button) {
             if (workingsTV.length() > 0 && (lastCharIsNumber() || lastCharIsPercent()))
                 workingsTV.append(view.text)
+            updateResultsTV()
         }
     }
 
@@ -100,10 +103,23 @@ class MainActivity : AppCompatActivity() {
         val length = workingsTV.length()
         if (length > 0)
             workingsTV.text = workingsTV.text.subSequence(0, length - 1)
+        updateResultsTV()
     }
 
     private fun equalsAction() {
-        parseCalculatorString(workingsTV.text.toString())
+        workingsTV.text = try {
+            parseCalculatorString(workingsTV.text.toString()).toString()
+        } catch (ex: IllegalArgumentException) {
+            getString(R.string.errorCalculatorMessage)
+        }
+    }
+
+    private fun updateResultsTV(){
+        resultsTV.text = try {
+            parseCalculatorString(workingsTV.text.toString()).toString()
+        } catch (ex: IllegalArgumentException) {
+            getString(R.string.errorCalculatorMessage)
+        }
     }
 
     private fun addDecimal(view: View) {
