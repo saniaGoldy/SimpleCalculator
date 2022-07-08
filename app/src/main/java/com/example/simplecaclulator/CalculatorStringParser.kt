@@ -17,12 +17,6 @@ fun parseCalculatorString(input: String): Double {
     Log.d(TAG, "parseCalculatorString: $splitString")
 
 
-
-    /*//build a final string and parse it
-    workingString = ""
-    splitString.forEach { workingString += it }
-    Log.d(TAG, "StringToCalculate: $workingString")*/
-
     val result = evaluate(splitString)
     Log.d(TAG, "result: $result")
     return result
@@ -31,9 +25,7 @@ fun parseCalculatorString(input: String): Double {
 fun evaluate(operandsAndOperators: MutableList<String>): Double {
     /*operandsAndOperators.forEachIndexed { index, s ->
         when (s) {
-            Operands.MULTIPLY.sign.toString() -> {
-                return
-            }
+
             Operands.MINUS.sign.toString() -> {
                 if (isOperand(operandsAndOperators[index - 1][0])) {
                     operandsAndOperators[index + 1] = s + operandsAndOperators[index + 1]
@@ -43,29 +35,31 @@ fun evaluate(operandsAndOperators: MutableList<String>): Double {
         }
     }*/
 
-    /*for (id in operandsAndOperators.indices){
-        if (operandsAndOperators[id] == Operands.PlUS.sign.toString()) {
-            Log.d(TAG, "evaluate: ${operandsAndOperators[id]}")
-            return evaluate(
-                operandsAndOperators.subList(
-                    0,
-                    id
-                )
-            ) + evaluate(operandsAndOperators.subList(id + 1, operandsAndOperators.size))
+    operandsAndOperators.apply {
+        forEachIndexed { index, s ->
+            if (s == Operands.MINUS.sign.toString()) {
+                if (operandsAndOperators.getOrNull(index - 1)?.get(0) in '0'..'9') {
+                    return@evaluate evaluate(
+                        operandsAndOperators.subList(
+                            0,
+                            index
+                        )
+                    ) - evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
+                } else {
+                    operandsAndOperators[index + 1] =
+                        operandsAndOperators[index] + operandsAndOperators[index + 1]
+                    return@evaluate evaluate(
+                        (operandsAndOperators.subList(
+                            0,
+                            index
+                        ) + operandsAndOperators.subList(
+                            index + 1,
+                            operandsAndOperators.size
+                        )) as MutableList<String>
+                    )
+                }
+            }
         }
-    }
-    for (id in operandsAndOperators.indices){
-        if (operandsAndOperators[id] == Operands.MULTIPLY.sign.toString()) {
-            Log.d(TAG, "evaluate: ${operandsAndOperators[id]}")
-            return evaluate(
-                operandsAndOperators.subList(
-                    0,
-                    id
-                )
-            ) * evaluate(operandsAndOperators.subList(id + 1, operandsAndOperators.size))
-        }
-    }*/
-    operandsAndOperators.apply{
         forEachIndexed { index, s ->
             if (s == Operands.PlUS.sign.toString()) {
                 return@evaluate evaluate(
@@ -74,16 +68,6 @@ fun evaluate(operandsAndOperators: MutableList<String>): Double {
                         index
                     )
                 ) + evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
-            }
-        }
-        forEachIndexed { index, s ->
-            if (s == Operands.MINUS.sign.toString()) {
-                return@evaluate evaluate(
-                    operandsAndOperators.subList(
-                        0,
-                        index
-                    )
-                ) - evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
             }
         }
         forEachIndexed { index, s ->
@@ -129,7 +113,7 @@ private fun String.parsePercents(): MutableList<String> {
                 (it
                     .substring(
                         0, firstPercentId
-                    ).toInt() / (100.0.pow((it.length - firstPercentId).toDouble())
+                    ).toDouble() / (100.0.pow((it.length - firstPercentId).toDouble())
                         )).toString()
             } else
                 it
@@ -170,10 +154,10 @@ private fun String.splitByOperators(): MutableList<String> {
     if (buffer != null) {
         if (buffer.isNotEmpty()) {
             splitString.add(buffer)
-        }else{
-            when(splitString[splitString.lastIndex].getOrNull(0)){
-                Operands.PlUS.sign,Operands.MINUS.sign -> splitString.add("0")
-                Operands.MULTIPLY.sign,Operands.DIVISION.sign -> splitString.add("1")
+        } else {
+            when (splitString[splitString.lastIndex].getOrNull(0)) {
+                Operands.PlUS.sign, Operands.MINUS.sign -> splitString.add("0")
+                Operands.MULTIPLY.sign, Operands.DIVISION.sign -> splitString.add("1")
             }
         }
     }
