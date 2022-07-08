@@ -20,7 +20,6 @@ class SpannableStringFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_spannable_string, container, false)
     }
 
@@ -35,6 +34,7 @@ class SpannableStringFragment : Fragment() {
                     .commit()
             }
         }
+
         spanString.setSpan(clickableSpan, 0, 4, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
         spanString.setSpan(
             RelativeSizeSpan(3.0f),
@@ -42,6 +42,7 @@ class SpannableStringFragment : Fragment() {
             spanString.length,
             Spanned.SPAN_INCLUSIVE_EXCLUSIVE
         )
+
         view.findViewById<TextView>(R.id.SpanStringTV).apply {
             text = spanString
             movementMethod = LinkMovementMethod()

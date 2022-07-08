@@ -16,25 +16,12 @@ fun parseCalculatorString(input: String): Double {
     val splitString: MutableList<String> = workingString.parsePercents()
     Log.d(TAG, "parseCalculatorString: $splitString")
 
-
     val result = evaluate(splitString)
     Log.d(TAG, "result: $result")
     return result
 }
 
-fun evaluate(operandsAndOperators: MutableList<String>): Double {
-    /*operandsAndOperators.forEachIndexed { index, s ->
-        when (s) {
-
-            Operands.MINUS.sign.toString() -> {
-                if (isOperand(operandsAndOperators[index - 1][0])) {
-                    operandsAndOperators[index + 1] = s + operandsAndOperators[index + 1]
-                }
-            }
-
-        }
-    }*/
-
+private fun evaluate(operandsAndOperators: MutableList<String>): Double {
     operandsAndOperators.apply {
         forEachIndexed { index, s ->
             if (s == Operands.MINUS.sign.toString()) {
@@ -45,9 +32,11 @@ fun evaluate(operandsAndOperators: MutableList<String>): Double {
                             index
                         )
                     ) - evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
+
                 } else {
                     operandsAndOperators[index + 1] =
                         operandsAndOperators[index] + operandsAndOperators[index + 1]
+
                     return@evaluate evaluate(
                         (operandsAndOperators.subList(
                             0,
@@ -94,7 +83,6 @@ fun evaluate(operandsAndOperators: MutableList<String>): Double {
     if (operandsAndOperators.size == 1) {
         return operandsAndOperators[0].toDouble()
     }
-
     throw IllegalArgumentException()
 }
 
@@ -123,7 +111,7 @@ private fun String.parsePercents(): MutableList<String> {
     return numbers
 }
 
-fun isOperand(char: Char): Boolean {
+private fun isOperand(char: Char): Boolean {
     Operands.values()
         .forEach { if (it.sign == char && it.sign != Operands.PERCENT.sign) return true }
     return false
