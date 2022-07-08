@@ -158,5 +158,7 @@ class CalculatorFragment : Fragment() {
             workingsTV.text[workingsTV.length() - 1]
     }
 
-
+    companion object {
+        fun newInstance() = CalculatorFragment()
+    }
 }
