@@ -65,7 +65,8 @@
         <Button
             android:id="@+id/divideButton"
             style="@style/buttonOperator"
-            android:text="@string/divide" />
+            android:text="@string/divide"
+            android:textColor="#00BCD4" />
     </LinearLayout>
 
     <LinearLayout style="@style/buttonRow">
@@ -114,7 +115,8 @@
             android:id="@+id/minusButton"
             style="@style/buttonOperator"
             android:text="@string/minus"
-            android:textSize="48sp" />
+            android:textSize="48sp"
+            tools:ignore="TextContrastCheck" />
     </LinearLayout>
 
     <LinearLayout style="@style/buttonRow">
