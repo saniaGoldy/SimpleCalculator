@@ -7,19 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.simplecaclulator.databinding.FragmentCalculatorBinding
 
 class CalculatorFragment : Fragment() {
     private var _binding: FragmentCalculatorBinding? = null
-
     private val binding get() = _binding!!
-
-    private val workingsTV: TextView
-        get() = binding.workingsTV
-    private val resultsTV: TextView
-        get() = binding.resultsTV
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,76 +64,92 @@ class CalculatorFragment : Fragment() {
 
     private fun numberAction(view: View) {
         if (view is Button) {
-            workingsTV.append(view.text)
-            Log.d(TAG, "numberAction: ${workingsTV.text}")
-            updateResultsTV()
+            with(binding) {
+                workingsTV.append(view.text)
+                Log.d(TAG, "numberAction: ${workingsTV.text}")
+                updateResultsTV()
+            }
         }
     }
 
     @SuppressLint("SetTextI18n")
     private fun operationAction(view: View) {
         if (view is Button) {
-            val operation = view.text
-            val length = workingsTV.length()
-            if (length > 0) {
-                if (!lastCharIsNumber() && !lastCharIsPercent()) {
-                    if (length > 1) {
-                        workingsTV.text =
-                            workingsTV.text.subSequence(0, length - 1).toString() + operation
-                    }
-                } else
+            with(binding) {
+                val operation = view.text
+                val length = workingsTV.length()
+                if (length > 0) {
+                    if (!lastCharIsNumber() && !lastCharIsPercent()) {
+                        if (length > 1) {
+                            workingsTV.text =
+                                workingsTV.text.subSequence(0, length - 1).toString() + operation
+                        }
+                    } else
+                        workingsTV.append(operation)
+                } else if (operation == getString(R.string.minus)) {
                     workingsTV.append(operation)
-            } else if (operation == getString(R.string.minus)) {
-                workingsTV.append(operation)
+                }
+                updateResultsTV()
             }
-            updateResultsTV()
         }
     }
 
     private fun clearAction() {
-        workingsTV.text = ""
-        resultsTV.text = ""
+        with(binding) {
+            workingsTV.text = ""
+            resultsTV.text = ""
+        }
     }
 
     private fun percentAction(view: View) {
         if (view is Button) {
-            if (workingsTV.length() > 0 && (lastCharIsNumber() || lastCharIsPercent()))
-                workingsTV.append(view.text)
-            updateResultsTV()
+            with(binding) {
+                if (workingsTV.length() > 0 && (lastCharIsNumber() || lastCharIsPercent()))
+                    workingsTV.append(view.text)
+                updateResultsTV()
+            }
         }
     }
 
     private fun backspaceAction() {
-        val length = workingsTV.length()
-        if (length > 0)
-            workingsTV.text = workingsTV.text.subSequence(0, length - 1)
-        updateResultsTV()
+        with(binding) {
+            val length = workingsTV.length()
+            if (length > 0)
+                workingsTV.text = workingsTV.text.subSequence(0, length - 1)
+            updateResultsTV()
+        }
     }
 
     private fun equalsAction() {
-        try {
-            workingsTV.text = parseCalculatorString(workingsTV.text.toString()).toString()
-            resultsTV.text = ""
-        } catch (ex: IllegalArgumentException) {
-            resultsTV.text = getString(R.string.errorCalculatorMessage)
+        with(binding) {
+            try {
+                workingsTV.text = parseCalculatorString(workingsTV.text.toString()).toString()
+                resultsTV.text = ""
+            } catch (ex: IllegalArgumentException) {
+                resultsTV.text = getString(R.string.errorCalculatorMessage)
+            }
         }
     }
 
     private fun updateResultsTV() {
-        resultsTV.text = try {
-            parseCalculatorString(workingsTV.text.toString()).toString()
-        } catch (ex: IllegalArgumentException) {
-            getString(R.string.errorCalculatorMessage)
+        with(binding) {
+            resultsTV.text = try {
+                parseCalculatorString(workingsTV.text.toString()).toString()
+            } catch (ex: IllegalArgumentException) {
+                getString(R.string.errorCalculatorMessage)
+            }
         }
     }
 
     private fun addDecimal(view: View) {
-        if (view is Button) {
-            if (lastCharIsNumber()) {
-                workingsTV.append(view.text)
-            } else if (!lastCharIsPercent()) {
-                if (lastChar() == getString(R.string.minus)[0] || lastChar() == null) {
-                    workingsTV.append("0.")
+        with(binding) {
+            if (view is Button) {
+                if (lastCharIsNumber()) {
+                    workingsTV.append(view.text)
+                } else if (!lastCharIsPercent()) {
+                    if (lastChar() == getString(R.string.minus)[0] || lastChar() == null) {
+                        workingsTV.append("0.")
+                    }
                 }
             }
         }
@@ -151,10 +160,12 @@ class CalculatorFragment : Fragment() {
     private fun lastCharIsPercent() = lastChar() == getString(R.string.percent)[0]
 
     private fun lastChar(): Char? {
-        return if (workingsTV.length() == 0) {
-            null
-        } else
-            workingsTV.text[workingsTV.length() - 1]
+        with(binding) {
+            return if (workingsTV.length() == 0) {
+                null
+            } else
+                workingsTV.text[workingsTV.length() - 1]
+        }
     }
 
     companion object {
