@@ -72,17 +72,17 @@
     <LinearLayout style="@style/buttonRow">
 
         <Button
-            android:id="@+id/Button7"
+            android:id="@+id/button_7"
             style="@style/buttonNumber"
             android:text="@string/_7" />
 
         <Button
-            android:id="@+id/Button8"
+            android:id="@+id/button_8"
             style="@style/buttonNumber"
             android:text="@string/_8" />
 
         <Button
-            android:id="@+id/Button9"
+            android:id="@+id/button_9"
             style="@style/buttonNumber"
             android:text="@string/_9" />
 
@@ -97,17 +97,17 @@
     <LinearLayout style="@style/buttonRow">
 
         <Button
-            android:id="@+id/Button4"
+            android:id="@+id/button_4"
             style="@style/buttonNumber"
             android:text="@string/_4" />
 
         <Button
-            android:id="@+id/Button5"
+            android:id="@+id/button_5"
             style="@style/buttonNumber"
             android:text="@string/_5" />
 
         <Button
-            android:id="@+id/Button6"
+            android:id="@+id/button_6"
             style="@style/buttonNumber"
             android:text="@string/_6" />
 
@@ -122,17 +122,17 @@
     <LinearLayout style="@style/buttonRow">
 
         <Button
-            android:id="@+id/Button1"
+            android:id="@+id/button_1"
             style="@style/buttonNumber"
             android:text="@string/_1" />
 
         <Button
-            android:id="@+id/Button2"
+            android:id="@+id/button_2"
             style="@style/buttonNumber"
             android:text="@string/_2" />
 
         <Button
-            android:id="@+id/Button3"
+            android:id="@+id/button_3"
             style="@style/buttonNumber"
             android:text="@string/_3" />
 
@@ -145,12 +145,12 @@
     <LinearLayout style="@style/buttonRow">
 
         <Button
-            android:id="@+id/DoubleZeroButton"
+            android:id="@+id/double_zero_button"
             style="@style/buttonNumber"
             android:text="@string/_00" />
 
         <Button
-            android:id="@+id/ZeroButton"
+            android:id="@+id/zero_button"
             style="@style/buttonNumber"
             android:text="@string/_0" />
 

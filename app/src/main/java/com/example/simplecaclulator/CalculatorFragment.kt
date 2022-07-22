@@ -31,21 +31,21 @@ class CalculatorFragment : Fragment() {
             equalsButton.setOnClickListener { equalsAction() }
 
             //number buttons
-            Button1.setOnClickListener { numberAction(it) }
-            Button2.setOnClickListener { numberAction(it) }
-            Button3.setOnClickListener { numberAction(it) }
-            Button4.setOnClickListener { numberAction(it) }
-            Button5.setOnClickListener { numberAction(it) }
-            Button6.setOnClickListener { numberAction(it) }
-            Button7.setOnClickListener { numberAction(it) }
-            Button8.setOnClickListener { numberAction(it) }
-            Button9.setOnClickListener { numberAction(it) }
-            ZeroButton.setOnClickListener { numberAction(it) }
-            DoubleZeroButton.setOnClickListener {
+            button1.setOnClickListener { numberAction(it) }
+            button2.setOnClickListener { numberAction(it) }
+            button3.setOnClickListener { numberAction(it) }
+            button4.setOnClickListener { numberAction(it) }
+            button5.setOnClickListener { numberAction(it) }
+            button6.setOnClickListener { numberAction(it) }
+            button7.setOnClickListener { numberAction(it) }
+            button8.setOnClickListener { numberAction(it) }
+            button9.setOnClickListener { numberAction(it) }
+            zeroButton.setOnClickListener { numberAction(it) }
+            doubleZeroButton.setOnClickListener {
                 if (workingsTV.length() > 0 && lastCharIsNumber())
                     numberAction(it)
                 else
-                    numberAction(ZeroButton)
+                    numberAction(zeroButton)
             }
 
             divideButton.setOnClickListener { operationAction(it) }
