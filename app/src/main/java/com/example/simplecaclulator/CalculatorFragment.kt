@@ -35,9 +35,12 @@ class CalculatorFragment : Fragment() {
             model.results.observe(viewLifecycleOwner, resultsObserver)
 
             clearButton.setOnClickListener { clearAction() }
-            backspaceButton.setOnClickListener { backspaceAction() }
+            backspaceButton.setOnClickListener {
+                model.parseBackspace()
+                model.updateResults(getString(R.string.errorCalculatorMessage))
+            }
             addDecimalButton.setOnClickListener { model.parseDecimalAction() }
-            equalsButton.setOnClickListener { equalsAction() }
+            equalsButton.setOnClickListener { model.equalsAction(getString(R.string.errorCalculatorMessage)) }
 
             //number buttons
             button1.setOnClickListener { parseNumberAction("1") }
@@ -50,20 +53,21 @@ class CalculatorFragment : Fragment() {
             button8.setOnClickListener { parseNumberAction("8") }
             button9.setOnClickListener { parseNumberAction("9") }
             zeroButton.setOnClickListener { parseNumberAction("0") }
-            doubleZeroButton.setOnClickListener { doubleZeroAction() }
+            doubleZeroButton.setOnClickListener {
+                model.parseDoubleZeroAction()
+                model.updateResults(getString(R.string.errorCalculatorMessage))
+            }
 
             divideButton.setOnClickListener { operationAction(Operands.DIVISION) }
             multiplyButton.setOnClickListener { operationAction(Operands.MULTIPLY) }
             minusButton.setOnClickListener { operationAction(Operands.MINUS) }
             plusButton.setOnClickListener { operationAction(Operands.PlUS) }
-            percentButton.setOnClickListener { percentAction() }
+            percentButton.setOnClickListener {
+                model.parsePercent(Symbols.PERCENT.value)
+                model.updateResults(getString(R.string.errorCalculatorMessage))
+            }
         }
         super.onViewCreated(view, savedInstanceState)
-    }
-
-    private fun parseNumberAction(number: String) {
-        model.numberAction(number)
-        updateResultsTV()
     }
 
     override fun onDestroyView() {
@@ -71,48 +75,21 @@ class CalculatorFragment : Fragment() {
         _binding = null
     }
 
-    private fun doubleZeroAction() {
-        model.doubleZeroValidation()
-        updateResultsTV()
+    private fun parseNumberAction(number: String) {
+        with(model) {
+            numberAction(number)
+            updateResults(getString(R.string.errorCalculatorMessage))
+        }
     }
 
-
     private fun operationAction(operand: Operands) {
-        model.operationValidation(operand.sign)
-        updateResultsTV()
+        model.parseOperation(operand.sign)
+        model.updateResults(getString(R.string.errorCalculatorMessage))
     }
 
     private fun clearAction() {
         model.workings.value = ""
         model.results.value = ""
-    }
-
-    private fun percentAction() {
-        model.percentValidation(Symbols.PERCENT.value)
-        updateResultsTV()
-    }
-
-    private fun backspaceAction() {
-        model.backspaceValidation()
-        updateResultsTV()
-    }
-
-    private fun equalsAction() {
-        try {
-            model.workings.value =
-                model.workings.value?.let { parseCalculatorString(it).toString() }
-            model.results.value = ""
-        } catch (ex: IllegalArgumentException) {
-            model.results.value = getString(R.string.errorCalculatorMessage)
-        }
-    }
-
-    private fun updateResultsTV() {
-        model.results.value = try {
-            model.workings.value?.let { parseCalculatorString(it).toString() }
-        } catch (ex: IllegalArgumentException) {
-            getString(R.string.errorCalculatorMessage)
-        }
     }
 
     companion object {

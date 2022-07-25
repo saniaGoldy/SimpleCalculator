@@ -13,7 +13,7 @@ class CalculatorViewModel : ViewModel() {
             return workings.value?.length ?: 0
         }
 
-    fun doubleZeroValidation() {
+    fun parseDoubleZeroAction() {
         if (workingsLength > 0 && lastCharIsNumber())
             numberAction("00")
         else
@@ -25,7 +25,7 @@ class CalculatorViewModel : ViewModel() {
         Log.d(TAG, "numberAction: ${workings.value}")
     }
 
-    fun operationValidation(operation: Char) {
+    fun parseOperation(operation: Char) {
         if (workingsLength > 0) {
             if (!lastCharIsNumber() && !lastCharIsPercent()) {
                 if (workingsLength > 1) {
@@ -38,12 +38,12 @@ class CalculatorViewModel : ViewModel() {
         }
     }
 
-    fun percentValidation(operation: Char) {
+    fun parsePercent(operation: Char) {
         if (workingsLength > 0 && (lastCharIsNumber() || lastCharIsPercent()))
             workings.value = workings.value + operation
     }
 
-    fun backspaceValidation() {
+    fun parseBackspace() {
         if (workingsLength > 0)
             workings.value = workings.value?.substring(0, workingsLength - 1)
     }
@@ -55,6 +55,24 @@ class CalculatorViewModel : ViewModel() {
             if (lastChar() == Operands.MINUS.sign || lastChar() == null) {
                 workings.value = workings.value + "0" + Symbols.DOT.value
             }
+        }
+    }
+
+    fun updateResults(errorMessage: String) {
+        results.value =try {
+            workings.value?.let { parseCalculatorString(it).toString() }
+        } catch (ex: IllegalArgumentException){
+            errorMessage
+        }
+    }
+
+    fun equalsAction(errorMessage: String) {
+        try {
+            workings.value =
+                workings.value?.let { parseCalculatorString(it).toString() }
+            results.value = ""
+        } catch (ex: IllegalArgumentException) {
+            results.value = errorMessage
         }
     }
 
