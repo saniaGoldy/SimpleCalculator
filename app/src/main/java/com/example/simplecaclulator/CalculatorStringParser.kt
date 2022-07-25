@@ -9,7 +9,7 @@ fun parseCalculatorString(input: String): Double {
     //Add multiply signs after percent signs if needed
     for (id in input.indices) {
         workingString += (input[id])
-        if (input[id] == Operands.PERCENT.sign && checkNext(input, id))
+        if (input[id] == Symbols.PERCENT.value && checkNext(input, id))
             workingString += (Operands.MULTIPLY.sign)
     }
     //split string by operators and parse percent signs
@@ -95,7 +95,7 @@ private fun checkNext(input: String, id: Int): Boolean {
 private fun String.parsePercents(): MutableList<String> {
     val numbers = mutableListOf<String>()
     this.splitByOperators().forEach {
-        val firstPercentId = it.indexOf(Operands.PERCENT.sign)
+        val firstPercentId = it.indexOf(Symbols.PERCENT.value)
         numbers.add(
             if (firstPercentId > 0) {
                 (it
@@ -113,7 +113,7 @@ private fun String.parsePercents(): MutableList<String> {
 
 private fun isOperand(char: Char): Boolean {
     Operands.values()
-        .forEach { if (it.sign == char && it.sign != Operands.PERCENT.sign) return true }
+        .forEach { if (it.sign == char && it.sign != Symbols.PERCENT.value) return true }
     return false
 }
 

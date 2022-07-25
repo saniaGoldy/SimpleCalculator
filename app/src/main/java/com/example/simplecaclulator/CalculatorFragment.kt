@@ -1,18 +1,18 @@
 package com.example.simplecaclulator
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.simplecaclulator.databinding.FragmentCalculatorBinding
 
 class CalculatorFragment : Fragment() {
     private var _binding: FragmentCalculatorBinding? = null
     private val binding get() = _binding!!
+    private val model by viewModels<CalculatorViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,38 +23,47 @@ class CalculatorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         binding.apply {
+            val workingsObserver = Observer<String> {
+                workingsTV.text = it
+            }
+            val resultsObserver = Observer<String> {
+                resultsTV.text = it
+            }
+
+            model.workings.observe(viewLifecycleOwner, workingsObserver)
+            model.results.observe(viewLifecycleOwner, resultsObserver)
+
             clearButton.setOnClickListener { clearAction() }
             backspaceButton.setOnClickListener { backspaceAction() }
-            addDecimalButton.setOnClickListener { addDecimal(it) }
+            addDecimalButton.setOnClickListener { model.parseDecimalAction() }
             equalsButton.setOnClickListener { equalsAction() }
 
             //number buttons
-            button1.setOnClickListener { numberAction(it) }
-            button2.setOnClickListener { numberAction(it) }
-            button3.setOnClickListener { numberAction(it) }
-            button4.setOnClickListener { numberAction(it) }
-            button5.setOnClickListener { numberAction(it) }
-            button6.setOnClickListener { numberAction(it) }
-            button7.setOnClickListener { numberAction(it) }
-            button8.setOnClickListener { numberAction(it) }
-            button9.setOnClickListener { numberAction(it) }
-            zeroButton.setOnClickListener { numberAction(it) }
-            doubleZeroButton.setOnClickListener {
-                if (workingsTV.length() > 0 && lastCharIsNumber())
-                    numberAction(it)
-                else
-                    numberAction(zeroButton)
-            }
+            button1.setOnClickListener { parseNumberAction("1") }
+            button2.setOnClickListener { parseNumberAction("2") }
+            button3.setOnClickListener { parseNumberAction("3") }
+            button4.setOnClickListener { parseNumberAction("4") }
+            button5.setOnClickListener { parseNumberAction("5") }
+            button6.setOnClickListener { parseNumberAction("6") }
+            button7.setOnClickListener { parseNumberAction("7") }
+            button8.setOnClickListener { parseNumberAction("8") }
+            button9.setOnClickListener { parseNumberAction("9") }
+            zeroButton.setOnClickListener { parseNumberAction("0") }
+            doubleZeroButton.setOnClickListener { doubleZeroAction() }
 
-            divideButton.setOnClickListener { operationAction(it) }
-            multiplyButton.setOnClickListener { operationAction(it) }
-            minusButton.setOnClickListener { operationAction(it) }
-            plusButton.setOnClickListener { operationAction(it) }
-            percentButton.setOnClickListener { percentAction(it) }
+            divideButton.setOnClickListener { operationAction(Operands.DIVISION) }
+            multiplyButton.setOnClickListener { operationAction(Operands.MULTIPLY) }
+            minusButton.setOnClickListener { operationAction(Operands.MINUS) }
+            plusButton.setOnClickListener { operationAction(Operands.PlUS) }
+            percentButton.setOnClickListener { percentAction() }
         }
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun parseNumberAction(number: String) {
+        model.numberAction(number)
+        updateResultsTV()
     }
 
     override fun onDestroyView() {
@@ -62,109 +71,47 @@ class CalculatorFragment : Fragment() {
         _binding = null
     }
 
-    private fun numberAction(view: View) {
-        if (view is Button) {
-            with(binding) {
-                workingsTV.append(view.text)
-                Log.d(TAG, "numberAction: ${workingsTV.text}")
-                updateResultsTV()
-            }
-        }
+    private fun doubleZeroAction() {
+        model.doubleZeroValidation()
+        updateResultsTV()
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun operationAction(view: View) {
-        if (view is Button) {
-            with(binding) {
-                val operation = view.text
-                val length = workingsTV.length()
-                if (length > 0) {
-                    if (!lastCharIsNumber() && !lastCharIsPercent()) {
-                        if (length > 1) {
-                            workingsTV.text =
-                                workingsTV.text.subSequence(0, length - 1).toString() + operation
-                        }
-                    } else
-                        workingsTV.append(operation)
-                } else if (operation == getString(R.string.minus)) {
-                    workingsTV.append(operation)
-                }
-                updateResultsTV()
-            }
-        }
+
+    private fun operationAction(operand: Operands) {
+        model.operationValidation(operand.sign)
+        updateResultsTV()
     }
 
     private fun clearAction() {
-        with(binding) {
-            workingsTV.text = ""
-            resultsTV.text = ""
-        }
+        model.workings.value = ""
+        model.results.value = ""
     }
 
-    private fun percentAction(view: View) {
-        if (view is Button) {
-            with(binding) {
-                if (workingsTV.length() > 0 && (lastCharIsNumber() || lastCharIsPercent()))
-                    workingsTV.append(view.text)
-                updateResultsTV()
-            }
-        }
+    private fun percentAction() {
+        model.percentValidation(Symbols.PERCENT.value)
+        updateResultsTV()
     }
 
     private fun backspaceAction() {
-        with(binding) {
-            val length = workingsTV.length()
-            if (length > 0)
-                workingsTV.text = workingsTV.text.subSequence(0, length - 1)
-            updateResultsTV()
-        }
+        model.backspaceValidation()
+        updateResultsTV()
     }
 
     private fun equalsAction() {
-        with(binding) {
-            try {
-                workingsTV.text = parseCalculatorString(workingsTV.text.toString()).toString()
-                resultsTV.text = ""
-            } catch (ex: IllegalArgumentException) {
-                resultsTV.text = getString(R.string.errorCalculatorMessage)
-            }
+        try {
+            model.workings.value =
+                model.workings.value?.let { parseCalculatorString(it).toString() }
+            model.results.value = ""
+        } catch (ex: IllegalArgumentException) {
+            model.results.value = getString(R.string.errorCalculatorMessage)
         }
     }
 
     private fun updateResultsTV() {
-        with(binding) {
-            resultsTV.text = try {
-                parseCalculatorString(workingsTV.text.toString()).toString()
-            } catch (ex: IllegalArgumentException) {
-                getString(R.string.errorCalculatorMessage)
-            }
-        }
-    }
-
-    private fun addDecimal(view: View) {
-        with(binding) {
-            if (view is Button) {
-                if (lastCharIsNumber()) {
-                    workingsTV.append(view.text)
-                } else if (!lastCharIsPercent()) {
-                    if (lastChar() == getString(R.string.minus)[0] || lastChar() == null) {
-                        workingsTV.append("0.")
-                    }
-                }
-            }
-        }
-    }
-
-    private fun lastCharIsNumber() = lastChar() in '0'..'9'
-
-    private fun lastCharIsPercent() = lastChar() == getString(R.string.percent)[0]
-
-    private fun lastChar(): Char? {
-        with(binding) {
-            return if (workingsTV.length() == 0) {
-                null
-            } else
-                workingsTV.text[workingsTV.length() - 1]
+        model.results.value = try {
+            model.workings.value?.let { parseCalculatorString(it).toString() }
+        } catch (ex: IllegalArgumentException) {
+            getString(R.string.errorCalculatorMessage)
         }
     }
 

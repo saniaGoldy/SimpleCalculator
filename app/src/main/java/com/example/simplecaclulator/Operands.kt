@@ -6,5 +6,5 @@ enum class Operands(val sign: Char) {
     MULTIPLY('×'),
     DIVISION('÷'),
     POWER('^'),
-    PERCENT('%')
+
 }
