@@ -1,7 +1,6 @@
 package com.example.simplecaclulator
 
 import android.util.Log
-import java.lang.IllegalArgumentException
 import kotlin.math.pow
 
 fun parseCalculatorString(input: String): Double {
@@ -9,7 +8,7 @@ fun parseCalculatorString(input: String): Double {
     //Add multiply signs after percent signs if needed
     for (id in input.indices) {
         workingString += (input[id])
-        if (input[id] == Symbols.PERCENT.value && checkNext(input, id))
+        if (input[id] == Symbols.PERCENT.value && isNextNumberOrMinus(input, id))
             workingString += (Operands.MULTIPLY.sign)
     }
     //split string by operators and parse percent signs
@@ -86,7 +85,7 @@ private fun evaluate(operandsAndOperators: MutableList<String>): Double {
     throw IllegalArgumentException()
 }
 
-private fun checkNext(input: String, id: Int): Boolean {
+private fun isNextNumberOrMinus(input: String, id: Int): Boolean {
     return if (id < input.lastIndex) {
         input[id + 1] in '0'..'9' || input[id + 1] == Operands.MINUS.sign
     } else false
@@ -112,8 +111,7 @@ private fun String.parsePercents(): MutableList<String> {
 }
 
 private fun isOperand(char: Char): Boolean {
-    Operands.values()
-        .forEach { if (it.sign == char && it.sign != Symbols.PERCENT.value) return true }
+    Operands.values().forEach { if (it.sign == char) return true }
     return false
 }
 
