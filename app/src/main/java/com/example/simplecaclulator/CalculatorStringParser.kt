@@ -14,76 +14,15 @@ fun parseCalculatorString(input: String): Double {
     //split string by operators and parse percent signs
     val splitString: MutableList<String> = workingString.parsePercents()
     Log.d(TAG, "parseCalculatorString: $splitString")
+    val rpn = convertToRPN(splitString)
+    Log.d(TAG, "RPNForm: $rpn")
 
-    val result = evaluate(splitString)
+    val result = evaluateRPN(rpn)
     Log.d(TAG, "result: $result")
     return result
 }
 
-private fun evaluate(operandsAndOperators: MutableList<String>): Double {
-    operandsAndOperators.apply {
-        forEachIndexed { index, s ->
-            if (s == Operands.MINUS.sign.toString()) {
-                if (operandsAndOperators.getOrNull(index - 1)?.get(0) in '0'..'9') {
-                    return@evaluate evaluate(
-                        operandsAndOperators.subList(
-                            0,
-                            index
-                        )
-                    ) - evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
 
-                } else {
-                    operandsAndOperators[index + 1] =
-                        operandsAndOperators[index] + operandsAndOperators[index + 1]
-
-                    return@evaluate evaluate(
-                        (operandsAndOperators.subList(
-                            0,
-                            index
-                        ) + operandsAndOperators.subList(
-                            index + 1,
-                            operandsAndOperators.size
-                        )) as MutableList<String>
-                    )
-                }
-            }
-        }
-        forEachIndexed { index, s ->
-            if (s == Operands.PlUS.sign.toString()) {
-                return@evaluate evaluate(
-                    operandsAndOperators.subList(
-                        0,
-                        index
-                    )
-                ) + evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
-            }
-        }
-        forEachIndexed { index, s ->
-            if (s == Operands.MULTIPLY.sign.toString()) {
-                return@evaluate evaluate(
-                    operandsAndOperators.subList(
-                        0,
-                        index
-                    )
-                ) * evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
-            }
-        }
-        forEachIndexed { index, s ->
-            if (s == Operands.DIVISION.sign.toString()) {
-                return@evaluate evaluate(
-                    operandsAndOperators.subList(
-                        0,
-                        index
-                    )
-                ) / evaluate(operandsAndOperators.subList(index + 1, operandsAndOperators.size))
-            }
-        }
-    }
-    if (operandsAndOperators.size == 1) {
-        return operandsAndOperators[0].toDouble()
-    }
-    throw IllegalArgumentException()
-}
 
 private fun isNextNumberOrMinus(input: String, id: Int): Boolean {
     return if (id < input.lastIndex) {
@@ -110,7 +49,7 @@ private fun String.parsePercents(): MutableList<String> {
     return numbers
 }
 
-private fun isOperand(char: Char): Boolean {
+fun isOperand(char: Char): Boolean {
     Operands.values().forEach { if (it.sign == char) return true }
     return false
 }
