@@ -15,20 +15,19 @@ fun evaluateRPN(tokens: MutableList<String>): Double {
 
     // Iterating to the each character
     // in the array of the string
-    for (i in tokens.indices) {
-
+    tokens.forEach {
         // If the character is not the special character
         // ('+', '-' ,'*' , '/')
         // then push the character to the stack
         choice =
-            if (!isOperand(tokens[i][0])) {
-                stack.push(tokens[i])
-                continue
+            if (!isOperand(it[0])) {
+                stack.push(it)
+                return@forEach
             } else {
                 // else if the character is the special
                 // character then use the switch method to
                 // perform the action
-                tokens[i]
+                it
             }
         when (choice[0]) {
             Operands.PlUS.sign -> {
@@ -75,7 +74,7 @@ fun evaluateRPN(tokens: MutableList<String>): Double {
                 result = p + value
                 stack.push(result)
             }
-            else -> continue
+            else -> return@forEach
         }
     }
 

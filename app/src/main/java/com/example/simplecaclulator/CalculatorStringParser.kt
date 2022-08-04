@@ -14,10 +14,8 @@ fun parseCalculatorString(input: String): Double {
     //split string by operators and parse percent signs
     val splitString: MutableList<String> = workingString.parsePercents()
     Log.d(TAG, "parseCalculatorString: $splitString")
-    val rpn = convertToRPN(splitString)
-    Log.d(TAG, "RPNForm: $rpn")
 
-    val result = evaluateRPN(rpn)
+    val result = evaluateRPN(splitString.convertToRPN().also { Log.d(TAG, "RPNForm: $it") })
     Log.d(TAG, "result: $result")
     return result
 }

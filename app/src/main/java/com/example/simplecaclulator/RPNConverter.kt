@@ -2,24 +2,27 @@ package com.example.simplecaclulator
 
 import java.util.*
 
-fun convertToRPN(expression: MutableList<String>): ArrayList<String> {
+const val openingBracket = "("
+const val closingBracket = ")"
+
+fun MutableList<String>.convertToRPN(): MutableList<String> {
     val result = ArrayList<String>()
-    if (expression.isEmpty()) {
+    if (this.isEmpty()) {
         return result
     }
     val opStack = Stack<String>()
-    for (token in expression) {
+    this.forEach { token ->
         if (isNumber(token)) {
             result.add(token)
-        } else if (token == "(") {
+        } else if (token == openingBracket) {
             opStack.push(token)
-        } else if (token == ")") {
-            while (opStack.peek() != "(") {
+        } else if (token == closingBracket) {
+            while (opStack.peek() != openingBracket) {
                 result.add(opStack.pop())
             }
             opStack.pop()
         } else {
-            while (!opStack.isEmpty() && getPriority(opStack.peek()) >= getPriority(token)) {
+            while (opStack.isNotEmpty() && getPriority(opStack.peek()) >= getPriority(token)) {
                 result.add(opStack.pop())
             }
             opStack.push(token)
@@ -37,10 +40,10 @@ private fun isNumber(token: String): Boolean {
 
 private fun getPriority(op: String): Int {
     return when (op) {
-        "(" -> {
+        openingBracket -> {
             0
         }
-        "+", "-" -> {
+        Operands.PlUS.sign.toString(), Operands.MINUS.sign.toString() -> {
             1
         }
         else -> {
