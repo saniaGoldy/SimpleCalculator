@@ -77,4 +77,7 @@ dependencies {
 
     // optional - Test helpers for LiveData
     testImplementation("androidx.arch.core:core-testing:$arch_version")
+
+    //Mockk library
+    testImplementation "io.mockk:mockk:1.9.3"
 }
