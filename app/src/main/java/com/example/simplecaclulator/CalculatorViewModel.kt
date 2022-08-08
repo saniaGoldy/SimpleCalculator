@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 class CalculatorViewModel : ViewModel() {
     val workings = MutableLiveData("")
     val results = MutableLiveData("")
+    val engine = CalculatorStringParser()
 
     private val workingsLength: Int
         get() {
@@ -44,8 +45,10 @@ class CalculatorViewModel : ViewModel() {
     }
 
     fun parseBackspace() {
-        if (workingsLength > 0)
+        if (workingsLength > 1)
             workings.value = workings.value?.substring(0, workingsLength - 1)
+        else if (workingsLength == 1)
+            workings.value = ""
     }
 
     fun parseDecimalAction() {
@@ -59,20 +62,24 @@ class CalculatorViewModel : ViewModel() {
     }
 
     fun updateResults(errorMessage: String) {
-        results.value =try {
-            workings.value?.let { parseCalculatorString(it).toString() }
-        } catch (ex: IllegalArgumentException){
-            errorMessage
+        if (workingsLength > 0) {
+            results.value = try {
+                workings.value?.let { engine.parseCalculatorString(it).toString() }
+            } catch (ex: IllegalArgumentException) {
+                errorMessage
+            }
         }
     }
 
     fun equalsAction(errorMessage: String) {
-        try {
-            workings.value =
-                workings.value?.let { parseCalculatorString(it).toString() }
-            results.value = ""
-        } catch (ex: IllegalArgumentException) {
-            results.value = errorMessage
+        if (workingsLength > 0) {
+            try {
+                workings.value =
+                    workings.value?.let { engine.parseCalculatorString(it).toString() }
+                results.value = ""
+            } catch (ex: IllegalArgumentException) {
+                results.value = errorMessage
+            }
         }
     }
 
